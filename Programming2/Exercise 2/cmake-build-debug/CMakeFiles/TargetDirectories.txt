@@ -1,0 +1,3 @@
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Programming2/Seminars/Exercise 2/cmake-build-debug/CMakeFiles/z2.dir
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Programming2/Seminars/Exercise 2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Programming2/Seminars/Exercise 2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

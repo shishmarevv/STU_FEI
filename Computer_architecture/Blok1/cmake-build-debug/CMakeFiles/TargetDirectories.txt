@@ -1,0 +1,3 @@
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug/CMakeFiles/Blok1.dir
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
