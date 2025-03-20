@@ -2,42 +2,6 @@
 	"entries" : 
 	[
 		{
-			"name" : "Blok1_BINARY_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug"
-		},
-		{
-			"name" : "Blok1_IS_TOP_LEVEL",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "ON"
-		},
-		{
-			"name" : "Blok1_SOURCE_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1"
-		},
-		{
 			"name" : "CMAKE_ADDR2LINE",
 			"properties" : 
 			[
@@ -91,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug"
+			"value" : "c:/Users/Nergigante/Documents/Projects/Study/Programming2/Exercise 2/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -467,7 +431,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/Nergigante/Documents/Projects/Study/Programming2/Exercise 2/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -539,7 +503,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Nergigante/Documents/Projects/STU_FEI/Computer_architecture/Blok1"
+			"value" : "C:/Users/Nergigante/Documents/Projects/Study/Programming2/Exercise 2"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -551,7 +515,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Program Files (x86)/Blok1"
+			"value" : "C:/Program Files (x86)/z2"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -767,7 +731,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "Blok1"
+			"value" : "z2"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1172,6 +1136,42 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "TRUE"
+		},
+		{
+			"name" : "z2_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Nergigante/Documents/Projects/Study/Programming2/Exercise 2/cmake-build-debug"
+		},
+		{
+			"name" : "z2_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "z2_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Nergigante/Documents/Projects/Study/Programming2/Exercise 2"
 		}
 	],
 	"kind" : "cache",
