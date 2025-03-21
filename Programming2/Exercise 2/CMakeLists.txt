@@ -6,7 +6,6 @@ add_compile_options(-Wall -Wextra -Wuninitialized -pedantic -g)
 
 add_executable(z2 src/functions.c src/data.c src/z2.c)
 target_include_directories(z2 PRIVATE include)
-target_link_libraries(z2 -lm)
 
 
 
