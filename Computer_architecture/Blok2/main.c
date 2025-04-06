@@ -178,43 +178,84 @@ void exercise4() {
 //Blok 5
 
 void exercise5_2() {
-    //SetConsoleOutputCP(65001);
     char *name = "Viktor Shishmarev";
     char *age = "19";
     char *height = "182 cm";
     char *weight = "70 kg";
-    int x = 15, y = 10;
-    char vertical = (char ) 186;
-    char horizontal = (char) 205;
+
+    int x = 15, y = 8;
+
+    char vertical = 186;
+    char horizontal = 205;
     char cornertl = 201;
     char cornertr = 187;
     char cornerbl = 200;
     char cornerbr = 188;
+    char cornerr = 185;
+    char cornerl = 204;
+
     int border = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
     int text = FOREGROUND_RED | FOREGROUND_INTENSITY;
+
     unsigned int maxLen = strlen(name);
     if (strlen(age) > maxLen) maxLen = strlen(age);
     if (strlen(height) > maxLen) maxLen = strlen(height);
     if (strlen(weight) > maxLen) maxLen = strlen(weight);
+
     color(border);
     cursor(x, y);
     printf("%c", cornertl);
     for (int i = 0; i < maxLen + 2; i++) printf("%c", horizontal);
     printf("%c", cornertr);
+
+    y++;
+    cursor(x, y);
     color(text);
-    cursor(x, y + 1);
     printf("%c %-*s %c", vertical, maxLen, name, vertical);
-    cursor(x, y + 2);
-    printf("%c %-*s %c", vertical, maxLen, age, vertical);
-    cursor(x, y + 3);
-    printf("%c %-*s %c", vertical, maxLen, height, vertical);
-    cursor(x, y + 4);
-    printf("%c %-*s %c", vertical, maxLen, weight, vertical);
+
+    y++;
+    cursor(x,y);
     color(border);
-    cursor(x, y + 5);
+    printf("%c", cornerl);
+    for (int i = 0; i < maxLen + 2; i++) printf("%c", horizontal);
+    printf("%c", cornerr);
+
+    y++;
+    cursor(x,y);
+    color(text);
+    printf("%c %-*s %c", vertical, maxLen, age, vertical);
+
+    y++;
+    cursor(x,y);
+    color(border);
+    printf("%c", cornerl);
+    for (int i = 0; i < maxLen + 2; i++) printf("%c", horizontal);
+    printf("%c", cornerr);
+
+    color(text);y++;
+    cursor(x,y);
+    color(text);
+    printf("%c %-*s %c", vertical, maxLen, height, vertical);
+
+    y++;
+    cursor(x,y);
+    color(border);
+    printf("%c", cornerl);
+    for (int i = 0; i < maxLen + 2; i++) printf("%c", horizontal);
+    printf("%c", cornerr);
+
+    y++;
+    cursor(x, y);
+    color(text);
+    printf("%c %-*s %c", vertical, maxLen, weight, vertical);
+
+    y++;
+    cursor(x, y);
+    color(border);
     printf("%c", cornerbl);
     for (int i = 0; i < maxLen + 2; i++) printf("%c", horizontal);
     printf("%c", cornerbr);
+
     color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
