@@ -11,7 +11,7 @@ RESET = "\033[0m"  #: Used to reset the console color to default
 
 SRC_PACKAGE_NAME = 'src'
 
-DEFAULT_C_FILENAME = 'z2.c' if os.path.exists(SRC_PACKAGE_NAME + '/z2.c') else 'main.c' if os.path.exists(
+DEFAULT_C_FILENAME = 'z3.c' if os.path.exists(SRC_PACKAGE_NAME + '/z3.c') else 'main.c' if os.path.exists(
     SRC_PACKAGE_NAME + '/main.c') else 'notfound'
 
 parser = argparse.ArgumentParser(description='Run tests for C program.')
