@@ -1,86 +1,107 @@
+#!/usr/bin/env python3
+"""
+Improved test harness for C project with newline and whitespace normalization.
+
+This script runs all test cases found in the `stdin` and `stdout` folders,
+normalizes line endings and whitespace, and compares the program's output
+to the expected results.
+
+Usage:
+    python tester.py [--exe EXECUTABLE] [--in-dir STDIN_DIR] [--out-dir STDOUT_DIR]
+
+Defaults:
+    EXECUTABLE: ./cmake-build-debug/z4
+    STDIN_DIR:   ./stdin
+    STDOUT_DIR:  ./stdout
+"""
 import os
-import subprocess
-import glob
 import sys
+import argparse
+import subprocess
+import difflib
+
+def normalize(text_bytes):
+    """Decode bytes, normalize line endings and reduce whitespace."""
+    text = text_bytes.decode(errors='replace')
+    text = text.replace('\r\n', '\n')
+    lines = text.strip().split('\n')
+    # Normalize each line: strip and reduce multiple spaces/tabs to one space
+    norm_lines = [' '.join(line.strip().split()) for line in lines if line.strip() != '']
+    return '\n'.join(norm_lines)
 
 
-class Tester:
-    def __init__(self, executable_path, stdin_dir='stdin', stdout_dir='stdout'):
-        self.executable = executable_path
-        self.stdin_dir = stdin_dir
-        self.stdout_dir = stdout_dir
-        self.passed = 0
-        self.failed = 0
+def run_tests(exe_path, stdin_dir, stdout_dir):
+    if not os.path.isfile(exe_path):
+        print(f"Error: Executable not found at '{exe_path}'", file=sys.stderr)
+        sys.exit(1)
 
-    def build_project(self):
-        try:
-            subprocess.check_call(['cmake', '--build', 'cmake-build-debug'], cwd='.')
-            print("Сборка проекта успешна")
-            return True
-        except subprocess.CalledProcessError:
-            print("Ошибка сборки проекта!")
-            return False
-
-    def run_test(self, stdin_file, stdout_file):
-        try:
-            with open(stdin_file, 'r') as fin, open(stdout_file, 'r') as fout:
-                expected = fout.read().strip()
-
-                # Запуск программы с аргументами из первой строки stdin
-                first_line = fin.readline().strip()
-                cmd = [self.executable] + first_line.split() if first_line else [self.executable]
-                fin.seek(0)
-
-                result = subprocess.run(
-                    cmd,
-                    stdin=fin,
-                    capture_output=True,
-                    text=True,
-                    timeout=10
-                )
-                actual = result.stdout.strip()
-
-                # Сравнение с ожидаемым выводом
-                if actual == expected:
-                    print(f"✅ Тест {os.path.basename(stdin_file)} пройден")
-                    self.passed += 1
-                else:
-                    print(f"❌ Тест {os.path.basename(stdin_file)} не пройден")
-                    print("Ожидаемый вывод:\n", expected)
-                    print("Фактический вывод:\n", actual)
-                    self.failed += 1
-
-        except Exception as e:
-            print(f"🚨 Ошибка выполнения теста: {str(e)}")
-            self.failed += 1
-
-    def run_all_tests(self):
-        print("\n🔨 Запуск сборки проекта...")
-        if not self.build_project():
-            return
-
-        print("\n🔍 Поиск тестов...")
-        tests = glob.glob(os.path.join(self.stdin_dir, '*.txt'))
-
-        for stdin_file in tests:
-            test_name = os.path.basename(stdin_file).replace('input', 'output')
-            stdout_file = os.path.join(self.stdout_dir, test_name)
-
-            if os.path.exists(stdout_file):
-                self.run_test(stdin_file, stdout_file)
-            else:
-                print(f"⚠️ Файл {stdout_file} не найден")
-
-        print("\n📊 Результаты:")
-        print(f"Пройдено: {self.passed}")
-        print(f"Провалено: {self.failed}")
-        sys.exit(self.failed > 0)
-
-
-if __name__ == "__main__":
-    tester = Tester(
-        executable_path='./cmake-build-debug/z4',
-        stdin_dir='stdin',
-        stdout_dir='stdout'
+    scenarios = sorted(
+        entry for entry in os.listdir(stdin_dir)
+        if os.path.isdir(os.path.join(stdin_dir, entry))
     )
-    tester.run_all_tests()
+    total = passed = 0
+
+    for scen in scenarios:
+        in_folder = os.path.join(stdin_dir, scen)
+        out_folder = os.path.join(stdout_dir, scen)
+        if not os.path.isdir(out_folder):
+            print(f"Warning: No expected-output folder for scenario '{scen}'")
+            continue
+
+        for fname in sorted(os.listdir(in_folder)):
+            in_file = os.path.join(in_folder, fname)
+            expected_file = os.path.join(out_folder, fname)
+
+            with open(in_file, 'rb') as f:
+                input_data = f.read()
+
+            proc = subprocess.run([exe_path], input=input_data,
+                                  stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
+            actual_norm = normalize(proc.stdout)
+
+            if not os.path.isfile(expected_file):
+                print(f"{scen}/{fname}: Missing expected file '{expected_file}'")
+                continue
+
+            with open(expected_file, 'rb') as f:
+                expected_norm = normalize(f.read())
+
+            total += 1
+            if actual_norm == expected_norm:
+                print(f"{scen}/{fname}: PASS")
+                passed += 1
+            else:
+                print(f"{scen}/{fname}: FAIL")
+                print("--- Input ---")
+                print(normalize(input_data))
+                print("--- Expected ---")
+                print(expected_norm)
+                print("--- Actual ---")
+                print(actual_norm)
+                print("--- Diff ---")
+                diff = difflib.unified_diff(
+                    expected_norm.splitlines(),
+                    actual_norm.splitlines(),
+                    fromfile='expected',
+                    tofile='actual',
+                    lineterm=''
+                )
+                for line in diff:
+                    print(line)
+                print("=" * 60)
+
+    print(f"\nSummary: {passed}/{total} tests passed.")
+    return passed, total
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Run test cases for the C project.")
+    parser.add_argument('--exe', '-e', default='./cmake-build-debug/z4.exe',
+                        help='Path to the compiled executable')
+    parser.add_argument('--in-dir', '-i', default='./stdin',
+                        help='Directory containing input scenarios')
+    parser.add_argument('--out-dir', '-o', default='./stdout',
+                        help='Directory containing expected outputs')
+    args = parser.parse_args()
+
+    run_tests(args.exe, args.in_dir, args.out_dir)

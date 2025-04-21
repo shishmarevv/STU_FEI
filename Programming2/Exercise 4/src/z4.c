@@ -19,13 +19,21 @@ typedef struct {
     int army;
     char att_name[MAX_NAME + 1];
     char item[MAX_NAME + 1];
+    int item_number;
     char def_name[MAX_NAME + 1];
     int dmg;
 } DAMAGE;
 
-void init(ARMY *s) {
+void initA(ARMY *s) {
     s->top = -1;
+    for (int i = 0; i < 5; i++) {
+        s->units[i].hp = 0;
+        s->units[i].item1 = NULL;
+        s->units[i].item2 = NULL;
+        memset(s->units[i].name, 0, sizeof(s->units[i].name));
+    }
 }
+
 
 int max(int a, int b) {
     return (a > b) ? a : b;
@@ -33,6 +41,7 @@ int max(int a, int b) {
 
 void error (const char *msg) {
     printf("%s\n", msg);
+    fflush(stdout);
     exit(0);
 }
 
@@ -50,10 +59,8 @@ bool push(ARMY *s,UNIT value) {
 }
 
 
-bool pop_at(ARMY *s, int index, UNIT *out) {
+bool pop_at(ARMY *s, int index) {
     if (index < 0 || index > s->top) return false;
-
-    *out = s->units[index];
 
     for (int i = index; i < s->top; ++i) {
         s->units[i] = s->units[i + 1];
@@ -71,30 +78,37 @@ bool peek_at(const ARMY *s, int index, UNIT *out) {
     return true;
 }
 
-void print_army(ARMY* a, int num) {
+void print_army(ARMY a, int num) {
     printf("Army %d\n", num);
-    for(int i=-1; i<a->top; i++) {
-        printf("Unit: %d\nName: %s\nHP: %d\n", i, a->units[i].name, a->units[i].hp);
-        if(a->units[i].item1) {
+    for(int i=0; i < a.top + 1; i++) {
+        printf("Unit: %d\nName: %s\nHP: %d\n", i, a.units[i].name, a.units[i].hp);
+        if(a.units[i].item1) {
             printf("Item %d: %s,%d,%d,%d,%d,%d\n", 1,
-                a->units[i].item1->name,
-                a->units[i].item1->att,
-                a->units[i].item1->def,
-                a->units[i].item1->slots,
-                a->units[i].item1->range,
-                a->units[i].item1->radius);
+                a.units[i].item1->name,
+                a.units[i].item1->att,
+                a.units[i].item1->def,
+                a.units[i].item1->slots,
+                a.units[i].item1->range,
+                a.units[i].item1->radius);
         }
-        if(a->units[i].item2) {
+        if(a.units[i].item2) {
             printf("Item %d: %s,%d,%d,%d,%d,%d\n", 2,
-                a->units[i].item2->name,
-                a->units[i].item2->att,
-                a->units[i].item2->def,
-                a->units[i].item2->slots,
-                a->units[i].item2->range,
-                a->units[i].item2->radius);
+                a.units[i].item2->name,
+                a.units[i].item2->att,
+                a.units[i].item2->def,
+                a.units[i].item2->slots,
+                a.units[i].item2->range,
+                a.units[i].item2->radius);
         }
         printf("\n");
     }
+}
+
+void print_units(ARMY a) {
+    for(int i=0; i < a.top + 1; i++) {
+        printf("%s,%d ", a.units[i].name, a.units[i].hp);
+    }
+    printf("\n");
 }
 
 const ITEM* find(const char* name) {
@@ -104,69 +118,112 @@ const ITEM* find(const char* name) {
     return NULL;
 }
 
-bool check_slots(UNIT* un) {
-    if (un->item1->slots + un->item2->slots > 2) {
-        return false;
+
+bool check_slots(UNIT un) {
+    int total_slots = 0;
+
+    if (un.item1) {
+        total_slots += un.item1->slots;
     }
-    return true;
+
+    if (un.item2) {
+        total_slots += un.item2->slots;
+    }
+
+    return total_slots <= 2;
 }
 
 
 int main(const int argc, char *argv[]) {
-    ARMY armies[2] = {0};
-    init(&armies[0]);
-    init(&armies[1]);
+    ARMY armies[2];
+    initA(&armies[0]);
+    initA(&armies[1]);
     int max_rounds = (argc > 1) ? atoi(argv[1]) : -1;
-
-    for(int army_num=0; army_num<2; army_num++) {
+    for(int army_num = 0; army_num < 2; army_num++) {
         int unit_count;
         scanf("%d", &unit_count);
-        if(unit_count <1 || unit_count>5) {
+        getchar();
+        if (unit_count < 1 || unit_count > 5) {
             error(ERR_UNIT_COUNT);
             return 0;
         }
-        armies[army_num].top = unit_count - 1;
 
-        for(int i=0; i<unit_count; i++) {
-            UNIT u = {.hp = 100};
-            char name[MAX_NAME], item1[MAX_NAME], item2[MAX_NAME];
-            scanf("%s %s %s", name, item1, item2);
+        for(int i = 0; i < unit_count; i++) {
+            UNIT u = {.hp = 100, .item2 = NULL};
+            char name[MAX_NAME + 1] = {0};
+            char item1[MAX_NAME + 1] = {0};
+            char item2[MAX_NAME + 1] = {0};
+
+            char c;
+            int items_read = 0, j = 0;
+            while ((c = getchar()) != '\n' && c != EOF) {
+                if (c == ' ') {
+                    items_read++;
+                    j = 0;
+                } else {
+                    if (items_read == 0) {
+                        name[j] = c;
+                        j++;
+                    } else if (items_read == 1) {
+                        item1[j] = c;
+                        j++;
+                    } else if (items_read == 2) {
+                        item2[j] = c;
+                        j++;
+                    } else if (items_read >= 3) {
+                        error(ERR_ITEM_COUNT);
+                        return 0;
+                    }
+                }
+            }
+            items_read++;
+
+            if (items_read < 2) {
+                error("ERR_ITEM_COUNT");
+                return 0;
+            }
+
             strncpy(u.name, name, MAX_NAME);
 
             const ITEM* it = find(item1);
             if(!it) {
-                printf("ERR_WRONG_ITEM\n");
+                error(ERR_WRONG_ITEM);
                 return 0;
             }
             u.item1 = it;
 
-            if(strcmp(item2, "-") != 0) {
+            if(items_read > 2 && strlen(item2) > 0) {
                 it = find(item2);
                 if(!it) {
-                    printf("ERR_WRONG_ITEM\n");
+                    error(ERR_WRONG_ITEM);
                     return 0;
                 }
-                u.item2 = it;
-            }
+                    u.item2 = it;
+                }
 
-            if(!check_slots(&u)) {
-                printf("ERR_SLOTS\n");
+            if(!check_slots(u)) {
+                error(ERR_SLOTS);
                 return 0;
-            }
+                }
+
             if(!push(&armies[army_num], u)) {
-                printf("ERR_UNIT_COUNT\n");
+                error(ERR_UNIT_COUNT);
                 return 0;
             }
         }
     }
 
 
-
+    print_army(armies[0], 1);
+    print_army(armies[1], 2);
     int round = 0;
     while((max_rounds == -1 || round < max_rounds) && armies[0].top > -1 && armies[1].top > -1) {
-        print_army(&armies[0], 1);
-        print_army(&armies[1], 2);
-        DAMAGE dmg[20] = {0};
+        printf("Round %d\n", round + 1);
+        printf("%d: ", 1);
+        print_units(armies[0]);
+        printf("%d: ", 2);
+        print_units(armies[1]);
+        DAMAGE dmg[100] = {0};
         int dmg_count = 0;
         for (int i = 0; i <= armies[0].top; i++) {
             UNIT attacker;
@@ -176,22 +233,24 @@ int main(const int argc, char *argv[]) {
                         for (int j = 0; j <= attacker.item1->radius; j++) {
                             UNIT defender;
                             if (peek_at(&armies[1], j, &defender)) {
-                                int def = 0;
+                                int de = 0;
                                 if (defender.item1) {
-                                    def += defender.item1->def;
+                                    de += defender.item1->def;
                                 }
                                 if (defender.item2) {
-                                    def += defender.item2->def;
+                                    de += defender.item2->def;
                                 }
-                                const int d = max(attacker.item1 -> att - def, 1);
+                                const int d = max(attacker.item1 -> att - de, 1);
                                 armies[1].units[j].hp -= d;
-                                dmg[dmg_count] = (DAMAGE) {
-                                    .army = 1,
-                                    .att_name = attacker.name,
-                                    .item = attacker.item1->name,
-                                    .def_name = defender.name,
-                                    .dmg = d
-                                };
+                                dmg[dmg_count].army = 1;
+                                strncpy(dmg[dmg_count].att_name, attacker.name, MAX_NAME);
+                                dmg[dmg_count].att_name[MAX_NAME] = '\0';
+                                strncpy(dmg[dmg_count].item, attacker.item1->name, MAX_NAME);
+                                dmg[dmg_count].item[MAX_NAME] = '\0';
+                                dmg[dmg_count].item_number = 1;
+                                strncpy(dmg[dmg_count].def_name, defender.name, MAX_NAME);
+                                dmg[dmg_count].def_name[MAX_NAME] = '\0';
+                                dmg[dmg_count].dmg = d;
                                 dmg_count++;
                             }
                         }
@@ -202,22 +261,24 @@ int main(const int argc, char *argv[]) {
                         for (int j = 0; j <= attacker.item2->radius; j++) {
                             UNIT defender;
                             if (peek_at(&armies[1], j, &defender)) {
-                                int def = 1;
+                                int de = 0;
                                 if (defender.item1) {
-                                    def += defender.item1->def;
+                                    de += defender.item1->def;
                                 }
                                 if (defender.item2) {
-                                    def += defender.item2->def;
+                                    de += defender.item2->def;
                                 }
-                                const int d = max(attacker.item2 -> att - def, 1);
+                                const int d = max(attacker.item2 -> att - de, 1);
                                 armies[1].units[j].hp -= d;
-                                dmg[dmg_count] = (DAMAGE) {
-                                    .army = 1,
-                                    .att_name = attacker.name,
-                                    .item = attacker.item2->name,
-                                    .def_name = defender.name,
-                                    .dmg = d
-                                };
+                                dmg[dmg_count].army = 1;
+                                strncpy(dmg[dmg_count].att_name, attacker.name, MAX_NAME);
+                                dmg[dmg_count].att_name[MAX_NAME] = '\0';
+                                strncpy(dmg[dmg_count].item, attacker.item2->name, MAX_NAME);
+                                dmg[dmg_count].item[MAX_NAME] = '\0';
+                                dmg[dmg_count].item_number = 2;
+                                strncpy(dmg[dmg_count].def_name, defender.name, MAX_NAME);
+                                dmg[dmg_count].def_name[MAX_NAME] = '\0';
+                                dmg[dmg_count].dmg = d;
                                 dmg_count++;
                             }
                         }
@@ -233,22 +294,24 @@ int main(const int argc, char *argv[]) {
                         for (int j = 0; j <= attacker.item1->radius; j++) {
                             UNIT defender;
                             if (peek_at(&armies[0], j, &defender)) {
-                                int def = 0;
+                                int de = 0;
                                 if (defender.item1) {
-                                    def += defender.item1->def;
+                                    de += defender.item1->def;
                                 }
                                 if (defender.item2) {
-                                    def += defender.item2->def;
+                                    de += defender.item2->def;
                                 }
-                                const int d = max(attacker.item1 -> att - def, 1);
+                                const int d = max(attacker.item1 -> att - de, 1);
                                 armies[0].units[j].hp -= d;
-                                dmg[dmg_count] = (DAMAGE) {
-                                    .army = 2,
-                                    .att_name = attacker.name,
-                                    .item = attacker.item1->name,
-                                    .def_name = defender.name,
-                                    .dmg = d
-                                };
+                                dmg[dmg_count].army = 2;
+                                strncpy(dmg[dmg_count].att_name, attacker.name, MAX_NAME);
+                                dmg[dmg_count].att_name[MAX_NAME] = '\0';
+                                strncpy(dmg[dmg_count].item, attacker.item1->name, MAX_NAME);
+                                dmg[dmg_count].item[MAX_NAME] = '\0';
+                                dmg[dmg_count].item_number = 1;
+                                strncpy(dmg[dmg_count].def_name, defender.name, MAX_NAME);
+                                dmg[dmg_count].def_name[MAX_NAME] = '\0';
+                                dmg[dmg_count].dmg = d;
                                 dmg_count++;
                             }
                         }
@@ -259,22 +322,24 @@ int main(const int argc, char *argv[]) {
                         for (int j = 0; j <= attacker.item2->radius; j++) {
                             UNIT defender;
                             if (peek_at(&armies[0], j, &defender)) {
-                                int def = 0;
+                                int de = 0;
                                 if (defender.item1) {
-                                    def += defender.item1->def;
+                                    de += defender.item1->def;
                                 }
                                 if (defender.item2) {
-                                    def += defender.item2->def;
+                                    de += defender.item2->def;
                                 }
-                                const int d = max(attacker.item2 -> att - def, 1);
+                                const int d = max(attacker.item2 -> att - de, 1);
                                 armies[0].units[j].hp -= d;
-                                dmg[dmg_count] = (DAMAGE) {
-                                    .army = 2,
-                                    .att_name = attacker.name,
-                                    .item = attacker.item2->name,
-                                    .def_name = defender.name,
-                                    .dmg = d
-                                };
+                                dmg[dmg_count].army = 2;
+                                strncpy(dmg[dmg_count].att_name, attacker.name, MAX_NAME);
+                                dmg[dmg_count].att_name[MAX_NAME] = '\0';
+                                strncpy(dmg[dmg_count].item, attacker.item2->name, MAX_NAME);
+                                dmg[dmg_count].item[MAX_NAME] = '\0';
+                                dmg[dmg_count].item_number = 2;
+                                strncpy(dmg[dmg_count].def_name, defender.name, MAX_NAME);
+                                dmg[dmg_count].def_name[MAX_NAME] = '\0';
+                                dmg[dmg_count].dmg = d;
                                 dmg_count++;
                             }
                         }
@@ -282,29 +347,43 @@ int main(const int argc, char *argv[]) {
                 }
             }
         }
-        for (int i = 0; i < dmg_count; i++) {
-            printf("%d,%s,%s: [%s,%d]\n", dmg[i].army, dmg[i].att_name, dmg[i].item, dmg[i].def_name, dmg[i].dmg);
+        char *name = dmg[0].att_name;
+        char *item = dmg[0].item;
+        int number = dmg[0].item_number;
+        printf("%d,%s,%s: [%s,%d] ", dmg[0].army, dmg[0].att_name, dmg[0].item, dmg[0].def_name, dmg[0].dmg);
+        for (int i = 1; i < dmg_count; i++) {
+            if ((strcasecmp(dmg[i].att_name, name) == 0) && (strcasecmp(dmg[i].item, item) == 0) && (dmg[i].item_number == number)) {
+                printf("[%s,%d] ", dmg[i].def_name, dmg[i].dmg);
+            } else {
+                name = dmg[i].att_name;
+                item = dmg[i].item;
+                number = dmg[i].item_number;
+                printf("\n%d,%s,%s: [%s,%d] ", dmg[i].army, dmg[i].att_name, dmg[i].item, dmg[i].def_name, dmg[i].dmg);
+            }
         }
-        for (int i = 0; i <= armies[0].top; i++) {
+        printf("\n");
+        for (int i = armies[0].top; i >= 0; i--) {
             if (armies[0].units[i].hp <= 0) {
-                pop_at(&armies[0], i, NULL);
-                i--;
+                pop_at(&armies[0], i);
             }
         }
-        for (int i = 0; i <= armies[1].top; i++) {
+        for (int i = armies[1].top; i >= 0; i--) {
             if (armies[1].units[i].hp <= 0) {
-                pop_at(&armies[1], i, NULL);
-                i--;
+                pop_at(&armies[1], i);
             }
         }
-        print_army(&armies[0], 1);
-        print_army(&armies[1], 2);
+        printf("%d: ", 1);
+        print_units(armies[0]);
+        printf("%d: ", 2);
+        print_units(armies[1]);
         round++;
+        printf("\n");
     }
 
-    if(armies[0].top == -1) printf("WINNER 2\n");
-    else if(armies[1].top == -1) printf("WINNER 1\n");
-    else printf("NO WINNER\n");
-
-    return 0;
+    if (max_rounds != 0) {
+        if (armies[0].top == -1 && armies[1].top == -1) printf("NO WINNER\n");
+        else if (armies[0].top == -1) printf("WINNER: 2\n");
+        else if(armies[1].top == -1) printf("WINNER: 1\n");
+    }
+    return 1;
 }
