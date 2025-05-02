@@ -1,0 +1,3 @@
+Spustenie: z5.exe txt/army1.txt wrong_path.txt
+Databaza predmetov: items1.json (treba premenovat na items.json)
+Poznamka: wrong_path.txt je neexistujuci subor.

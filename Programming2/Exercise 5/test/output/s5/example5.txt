@@ -1,0 +1,30 @@
+Army 1
+    Unit: 0
+    Name: Chuck
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+    Item 2: sword,9,2,1,0,0
+
+Army 2
+    Unit: 0
+    Name: Leo
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+
+    Unit: 1
+    Name: Mio
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+    Item 2: sword,9,2,1,0,0
+
+    Unit: 2
+    Name: Nao
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+
+    Unit: 3
+    Name: Rio
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+    Item 2: sword,9,2,1,0,0
+

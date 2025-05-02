@@ -1,0 +1,63 @@
+Name: slingshot
+Attack: 2
+Defense: 0
+Slots: 2
+Range: 2
+Radius: 1
+
+Name: spear
+Attack: 6
+Defense: 1
+Slots: 1
+Range: 1
+Radius: 1
+
+Name: armor
+Attack: 2
+Defense: 7
+Slots: 1
+Range: 0
+Radius: 0
+
+Name: shield
+Attack: 2
+Defense: 6
+Slots: 1
+Range: 0
+Radius: 0
+
+Name: aura
+Attack: 0
+Defense: 8
+Slots: 1
+Range: 0
+Radius: 0
+
+Name: hammer
+Attack: 8
+Defense: 2
+Slots: 2
+Range: 1
+Radius: 2
+
+Name: crossbow
+Attack: 5
+Defense: 1
+Slots: 2
+Range: 3
+Radius: 0
+
+Name: fireball
+Attack: 11
+Defense: 0
+Slots: 1
+Range: 3
+Radius: 3
+
+Name: sword
+Attack: 9
+Defense: 2
+Slots: 1
+Range: 0
+Radius: 0
+

@@ -1,0 +1,45 @@
+Army 1
+    Unit: 0
+    Name: Neil
+    HP: 100
+    Item 1: hammer,8,2,2,1,2
+
+    Unit: 1
+    Name: Nick
+    HP: 100
+    Item 1: rock,3,0,1,2,1
+    Item 2: helmet,1,5,1,0,0
+
+    Unit: 2
+    Name: Buck
+    HP: 100
+    Item 1: axe,10,2,2,1,1
+
+Army 2
+    Unit: 0
+    Name: Lukas
+    HP: 100
+    Item 1: gloves,1,4,1,0,0
+
+    Unit: 1
+    Name: Tomas
+    HP: 100
+    Item 1: spear,6,1,1,1,1
+    Item 2: dagger,4,0,1,0,0
+
+    Unit: 2
+    Name: Robo
+    HP: 100
+    Item 1: rock,3,0,1,2,1
+
+    Unit: 3
+    Name: Patrik
+    HP: 100
+    Item 1: axe,10,2,2,1,1
+
+    Unit: 4
+    Name: Juro
+    HP: 100
+    Item 1: aura,0,8,1,0,0
+    Item 2: wand,12,4,1,4,2
+

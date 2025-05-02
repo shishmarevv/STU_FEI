@@ -1,0 +1,30 @@
+Army 1
+    Unit: 0
+    Name: Tim
+    HP: 100
+    Item 1: sword,9,2,1,0,0
+    Item 2: fireball,11,0,1,3,3
+
+    Unit: 1
+    Name: Geck
+    HP: 100
+    Item 1: armor,2,7,1,0,0
+    Item 2: shield,2,6,1,0,0
+
+    Unit: 2
+    Name: Frank
+    HP: 100
+    Item 1: hammer,8,2,2,1,2
+
+Army 2
+    Unit: 0
+    Name: Flock
+    HP: 100
+    Item 1: slingshot,2,0,2,2,1
+
+    Unit: 1
+    Name: Hans
+    HP: 100
+    Item 1: spear,6,1,1,1,1
+    Item 2: spear,6,1,1,1,1
+

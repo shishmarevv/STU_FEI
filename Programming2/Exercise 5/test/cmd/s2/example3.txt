@@ -1,0 +1,2 @@
+Spustenie: z5.exe
+Databaza predmetov: err_missing_attribute3.json (treba premenovat na items.json)

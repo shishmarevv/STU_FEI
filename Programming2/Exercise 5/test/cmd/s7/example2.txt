@@ -1,0 +1,2 @@
+Spustenie: z5.exe
+Databaza predmetov: v pracovnom adresari spustaneho programu sa nesmie nachadzat subor items.json (aby vznikla chyba ERR_FILE).

@@ -1,0 +1,7 @@
+Name: sword
+Attack: 9
+Defense: 2
+Slots: 1
+Range: 0
+Radius: 0
+

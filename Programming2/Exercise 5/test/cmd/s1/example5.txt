@@ -1,0 +1,2 @@
+Spustenie: z5.exe
+Databaza predmetov: items2_noformat.json (treba premenovat na items.json)

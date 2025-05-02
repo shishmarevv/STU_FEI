@@ -1,0 +1,2 @@
+Spustenie: z5.exe txt/army9.txt txt/army8.txt
+Databaza predmetov: items3.json (treba premenovat na items.json)

@@ -1,0 +1,3 @@
+/home/shishmarevv/projects/STU_FEI/Programming2/Exercise 5/cmake-build-debug/CMakeFiles/Exercise_5.dir
+/home/shishmarevv/projects/STU_FEI/Programming2/Exercise 5/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/shishmarevv/projects/STU_FEI/Programming2/Exercise 5/cmake-build-debug/CMakeFiles/rebuild_cache.dir

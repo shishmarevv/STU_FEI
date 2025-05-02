@@ -1,0 +1,2 @@
+Spustenie: z5.exe txt/err_wrong_item.txt txt/army5.txt
+Databaza predmetov: items1.json (treba premenovat na items.json)
