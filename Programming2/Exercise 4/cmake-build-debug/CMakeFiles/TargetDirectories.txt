@@ -1,0 +1,3 @@
+C:/Projects/STU_FEI/Programming2/Exercise 4/cmake-build-debug/CMakeFiles/z4.dir
+C:/Projects/STU_FEI/Programming2/Exercise 4/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Projects/STU_FEI/Programming2/Exercise 4/cmake-build-debug/CMakeFiles/rebuild_cache.dir
