@@ -6,6 +6,9 @@
 
 #include "data.h"
 
+
+#define MAX_ITEMS 25
+
 typedef struct {
     ITEM *items;
     size_t count;
@@ -15,6 +18,7 @@ typedef struct {
     struct unit units[5];
     int top;
 } ARMY;
+
 
 void initA(ARMY *s) {
     s->top = -1;
@@ -58,34 +62,8 @@ bool peek_at(const ARMY *s, int index, UNIT *out) {
     return true;
 }
 
-void print_army(ARMY a, int num) {
-    printf("Army %d\n", num);
-    for(int i=0; i < a.top + 1; i++) {
-        printf("Unit: %d\nName: %s\nHP: %d\n", i, a.units[i].name, a.units[i].hp);
-        if(a.units[i].item1) {
-            printf("Item %d: %s,%d,%d,%d,%d,%d\n", 1,
-                a.units[i].item1->name,
-                a.units[i].item1->att,
-                a.units[i].item1->def,
-                a.units[i].item1->slots,
-                a.units[i].item1->range,
-                a.units[i].item1->radius);
-        }
-        if(a.units[i].item2) {
-            printf("Item %d: %s,%d,%d,%d,%d,%d\n", 2,
-                a.units[i].item2->name,
-                a.units[i].item2->att,
-                a.units[i].item2->def,
-                a.units[i].item2->slots,
-                a.units[i].item2->range,
-                a.units[i].item2->radius);
-        }
-        printf("\n");
-    }
-}
-
 void error(const char *msg) {
-    printf("%s\n", msg);
+    fprintf(stderr, "%s\n", msg);
     exit(0);
 }
 
@@ -96,8 +74,34 @@ int skip(FILE *file) {
             return c;
         }
     }
+    return EOF;
 }
 
+void print_army(ARMY a, int num) {
+    printf("Army %d\n", num);
+    for(int i=0; i < a.top + 1; i++) {
+        printf("\tUnit: %d\n\tName: %s\n\tHP: %d\n", i, a.units[i].name, a.units[i].hp);
+        if(a.units[i].item1) {
+            printf("\tItem %d: %s,%d,%d,%d,%d,%d\n", 1,
+                a.units[i].item1->name,
+                a.units[i].item1->att,
+                a.units[i].item1->def,
+                a.units[i].item1->slots,
+                a.units[i].item1->range,
+                a.units[i].item1->radius);
+        }
+        if(a.units[i].item2) {
+            printf("\tItem %d: %s,%d,%d,%d,%d,%d\n", 2,
+                a.units[i].item2->name,
+                a.units[i].item2->att,
+                a.units[i].item2->def,
+                a.units[i].item2->slots,
+                a.units[i].item2->range,
+                a.units[i].item2->radius);
+        }
+        printf("\n");
+    }
+}
 
 void load_items(FILE *json, ItemList *item_list) {
     int c;
@@ -112,6 +116,9 @@ void load_items(FILE *json, ItemList *item_list) {
 
             while ((c = fgetc(json)) != EOF && c != '}') {
                 c = skip(json);
+                if (c == '}') {
+                    break;
+                }
                 if (c == '"') {
                     char key[MAX_NAME];
                     int i = 0;
@@ -132,7 +139,7 @@ void load_items(FILE *json, ItemList *item_list) {
                                 }
                                 item.name[i] = '\0';
                                 attributes[0] = true;
-                            } else if (c == ',') {
+                            } else if (c == ',' || c == '}') {
                                 error(ERR_MISSING_VALUE);
                             } else {
                                 error(ERR_BAD_VALUE);
@@ -143,7 +150,7 @@ void load_items(FILE *json, ItemList *item_list) {
                             if (fscanf(json, "%d", &item.att) == 1) {
                                 attributes[1] = true;
                             } else {
-                                if (c == ',') {
+                                if (c == ',' || c == '}') {
                                     error(ERR_MISSING_VALUE);
                                 } else {
                                     error(ERR_BAD_VALUE);
@@ -155,7 +162,7 @@ void load_items(FILE *json, ItemList *item_list) {
                             if (fscanf(json, "%d", &item.def) == 1) {
                                 attributes[2] = true;
                             } else {
-                                if (c == ',') {
+                                if (c == ',' || c == '}') {
                                     error(ERR_MISSING_VALUE);
                                 } else {
                                     error(ERR_BAD_VALUE);
@@ -167,7 +174,7 @@ void load_items(FILE *json, ItemList *item_list) {
                             if (fscanf(json, "%d", &item.slots) == 1) {
                                 attributes[3] = true;
                             } else {
-                                if (c == ',') {
+                                if (c == ',' || c == '}') {
                                     error(ERR_MISSING_VALUE);
                                 } else {
                                     error(ERR_BAD_VALUE);
@@ -179,7 +186,7 @@ void load_items(FILE *json, ItemList *item_list) {
                             if (fscanf(json, "%d", &item.range) == 1) {
                                 attributes[4] = true;
                             } else {
-                                if (c == ',') {
+                                if (c == ',' || c == '}') {
                                     error(ERR_MISSING_VALUE);
                                 } else {
                                     error(ERR_BAD_VALUE);
@@ -191,7 +198,7 @@ void load_items(FILE *json, ItemList *item_list) {
                             if (fscanf(json, "%d", &item.radius) == 1) {
                                 attributes[5] = true;
                             } else {
-                                if (c == ',') {
+                                if (c == ',' || c == '}') {
                                     error(ERR_MISSING_VALUE);
                                 } else {
                                     error(ERR_BAD_VALUE);
@@ -201,9 +208,12 @@ void load_items(FILE *json, ItemList *item_list) {
                     }
                 }
             }
-
             if (attributes[0] && attributes[1] && attributes[2] && attributes[3] && attributes[4] && attributes[5]) {
-                item_list->items[item_list->count++] = item;
+                if (item_list->count >= MAX_ITEMS) {
+                    error("ERR_TOO_MANY_ITEMS");
+                }
+                item_list->items[item_list->count] = item;
+                item_list->count++;
             } else {
                 error(ERR_MISSING_ATTRIBUTE);
             }
@@ -238,20 +248,27 @@ void load_army(FILE *txt, const ItemList *item_list, ARMY *army) {
     if (fscanf(txt, "%d", &unit_count) != 1 || unit_count < MIN_ARMY || unit_count > MAX_ARMY) {
         error(ERR_UNIT_COUNT);
     }
-    getchar();
+    fgetc(txt);
     for(int i = 0; i < unit_count; i++) {
         UNIT u = {.hp = 100, .item2 = NULL};
         char name[MAX_NAME + 1] = {0};
         char item1[MAX_NAME + 1] = {0};
         char item2[MAX_NAME + 1] = {0};
 
-        char c;
         int items_read = 0, j = 0;
-        while ((c = (char) getchar()) != '\n' && c != EOF) {
+        bool wasspace = false;
+        char c = (char) skip(txt);
+        ungetc(c, txt);
+        while ((c = (char) fgetc(txt)) != '\n' && c != EOF) {
             if (c == ' ') {
+                if (wasspace) {
+                    continue;
+                }
                 items_read++;
                 j = 0;
+                wasspace = true;
             } else {
+                wasspace = false;
                 if (items_read == 0) {
                     name[j] = c;
                     j++;
@@ -263,7 +280,6 @@ void load_army(FILE *txt, const ItemList *item_list, ARMY *army) {
                     j++;
                 } else if (items_read >= 3) {
                     error(ERR_ITEM_COUNT);
-
                 }
             }
         }
@@ -311,8 +327,6 @@ void print_items(const ItemList *item_list) {
     }
 }
 
-
-
 int main(const int argc, char *argv[]){
     if (argc == 1) {
         FILE *json = fopen(ITEMS_FILE, "r");
@@ -320,18 +334,20 @@ int main(const int argc, char *argv[]){
             error(ERR_FILE);
         }
         ItemList item_list;
-        item_list.items = malloc(sizeof(ITEM) * MAX_ARMY);
+        item_list.items = malloc(sizeof(ITEM) * MAX_ITEMS);
+        item_list.count = 0;
         load_items(json, &item_list);
         fclose(json);
         print_items(&item_list);
         free(item_list.items);
-    } else if (argc == 2) {
+    } else if (argc == 3) {
         FILE *json = fopen(ITEMS_FILE, "r");
         if (json == NULL) {
             error(ERR_FILE);
         }
         ItemList item_list;
-        item_list.items = malloc(sizeof(ITEM) * MAX_ARMY);
+        item_list.items = malloc(sizeof(ITEM) * MAX_ITEMS);
+        item_list.count = 0;
         load_items(json, &item_list);
         fclose(json);
 
@@ -343,6 +359,9 @@ int main(const int argc, char *argv[]){
         load_army(txt, &item_list, &armies[0]);
         fclose(txt);
         txt = fopen(argv[2], "r");
+        if (txt == NULL) {
+            error(ERR_FILE);
+        }
         load_army(txt, &item_list, &armies[1]);
         fclose(txt);
         print_army(armies[0], 1);
@@ -350,5 +369,5 @@ int main(const int argc, char *argv[]){
     } else {
         error(ERR_CMD);
     }
-    return 1;
+    return 0;
 }

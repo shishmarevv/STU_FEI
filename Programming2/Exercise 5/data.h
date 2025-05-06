@@ -5,7 +5,7 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define ITEMS_FILE "items.json"   // fixne dana cesta k JSON suboru s predmetmi ... NEMENIT !!!
+#define ITEMS_FILE "C:/Projects/STU_FEI/Programming2/Exercise 5/json/err_missing_attribute1.json"   // fixne dana cesta k JSON suboru s predmetmi ... NEMENIT !!!
 #define MAX_LINE 1000       // maximalna dlzka riadku v TXT/JSON subore
 #define MAX_FILENAME 500    // maximalna dlzka cesty k suboru
 #define MAX_NAME 100        // maximalna dlzka nazvu/mena predmetu/jednotky
