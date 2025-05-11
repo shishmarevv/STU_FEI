@@ -2,7 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Blok3"
+			"path" : "Blok3.exe"
+		},
+		{
+			"path" : "Blok3.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -65,12 +68,16 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
 			}
 		],
 		"language" : "C"
 	},
 	"name" : "Blok3",
-	"nameOnDisk" : "Blok3",
+	"nameOnDisk" : "Blok3.exe",
 	"paths" : 
 	{
 		"build" : ".",
