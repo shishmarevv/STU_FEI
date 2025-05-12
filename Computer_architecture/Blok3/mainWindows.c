@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <windows.h>
+
 
 #define DEFAULT_BUFLEN 4096
 
@@ -56,20 +58,24 @@ void print_left(HANDLE hConsole, char *text) {
     for (int i = 0; i < len; i++) {
         char word[max_len];
         int j = 0;
-        while (!isspace(text[i]) && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
+        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
             word[j] = text[i];
             i++;
             j++;
         }
+        j++;
         word[j] = ' ';
 
         if ((i - j)%max_len + j < max_len) {
             custom_print(word, j, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         } else {
-            printf("\n");
+            coord.Y++;
+            SetConsoleCursorPosition(hConsole, coord);
             custom_print(word, j, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         }
     }
+    coord.Y++;
+    SetConsoleCursorPosition(hConsole, coord);
 }
 
 void print_right(HANDLE hConsole, char *text) {
@@ -88,25 +94,27 @@ void print_right(HANDLE hConsole, char *text) {
     for (int i = 0; i < len; i++) {
         char word[max_len];
         int j = 0;
-        while (!isspace(text[i]) && text[i] != '\0' && j < max_len - 1) {
+        while (text[i] != ' ' && text[i] != '\0' && j < max_len - 1) {
             word[j] = text[i];
             i++;
             j++;
         }
+        j++;
         word[j] = ' ';
 
         if ((i - j)%max_len + j < max_len) {
             custom_print(word, j, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         } else {
-            y++;
-            COORD coord = {x, y};
+            coord.Y++;
             SetConsoleCursorPosition(hConsole, coord);
             custom_print(word, j, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         }
     }
+    coord.Y++;
+    SetConsoleCursorPosition(hConsole, coord);
 }
 
-SOCKET connect() {
+SOCKET my_connect() {
     WSADATA wsaData;
     int iResult;
 
@@ -152,7 +160,7 @@ SOCKET connect() {
     sleep(250);
 }
 
-void send(SOCKET connect_socket, char *msg) {
+void my_send(SOCKET connect_socket, char *msg) {
     int iResult = send(connect_socket, msg, (int) strlen(msg), 0);
 
     if (iResult == SOCKET_ERROR) {
@@ -164,7 +172,7 @@ void send(SOCKET connect_socket, char *msg) {
     printf("Sent %d bytes\n", iResult);
 }
 
-void get(SOCKET connect_socket, char *msg) {
+void my_get(SOCKET connect_socket, char *msg) {
     int iResult = recv(connect_socket, msg, DEFAULT_BUFLEN, 0);
 
     if (iResult > 0) {
@@ -182,7 +190,7 @@ int main() {
 
     char buffer[DEFAULT_BUFLEN] = {0};
 
-    SOCKET connect_socket = connect();
+    SOCKET connect_socket = my_connect();
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hConsole == INVALID_HANDLE_VALUE) return 1;
@@ -205,11 +213,11 @@ int main() {
             sprintf(buffer, "%d\n", id);
         }
 
-        send(connect_socket, buffer, (int) strlen(buffer), 0);
+        my_send(connect_socket, buffer);
 
         memset(buffer, 0, DEFAULT_BUFLEN);
 
-        get(connect_socket, buffer);
+        my_get(connect_socket, buffer);
 
         print_left(hConsole, buffer);
     }
