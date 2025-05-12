@@ -198,6 +198,7 @@ int main() {
     while (1) {
         memset(buffer, 0, DEFAULT_BUFLEN);
         print_right(hConsole, "Please enter the message: ");
+        set_color(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
         fgets(buffer, DEFAULT_BUFLEN, stdin);
 
         if (strcmp(buffer, "exit\n") == 0) {
