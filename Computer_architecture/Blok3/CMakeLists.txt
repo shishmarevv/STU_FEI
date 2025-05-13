@@ -6,3 +6,4 @@ set(CMAKE_C_STANDARD 11)
 add_executable(Blok3 main.c)
 
 target_link_libraries(Blok3 ws2_32)
+target_link_libraries(Blok3 ncurses)

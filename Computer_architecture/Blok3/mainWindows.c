@@ -126,7 +126,7 @@ void print_right(HANDLE hConsole, char *text) {
 }
 
 
-void decipher(char *in, const int key, const int length) {
+void decrypt(char *in, const int key, const int length) {
     set_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
     for (int i = 0; i < length; i++) {
         if (in[i] != ' ' && in[i] != '\0' && in[i] != '\n') {
@@ -263,7 +263,7 @@ int main() {
             sprintf(buffer, "%d\n", id);
         }
         if (strcmp(buffer, "decipher\n") == 0) {
-            decipher(old_buffer, 55, 132);
+            decrypt(old_buffer, 55, 132);
             print_right(hConsole, old_buffer);
             logger(file, old_buffer, strlen(old_buffer));
             continue;
