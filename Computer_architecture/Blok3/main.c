@@ -9,7 +9,6 @@
 #include <netdb.h>
 #include <sys/ioctl.h>
 #include <locale.h>
-#include <ncurses.h>
 #include <math.h>
 
 #define DEFAULT_BUFLEN 4096
@@ -195,6 +194,7 @@ int main(int argc, char *argv[]){
         int check = 0;
         bzero(buffer, DEFAULT_BUFLEN);
         print_aligned("Neo: ", 0);
+        printf("%s", BLUE);
         fgets(buffer, DEFAULT_BUFLEN, stdin);
 
         if (strcmp(buffer, "quit\n") == 0) {
@@ -205,6 +205,7 @@ int main(int argc, char *argv[]){
         if (strcmp(buffer, "calc\n") == 0) {
             int res = calc(127855);
             sprintf(buffer, "%d\n", res);
+            print_aligned(buffer, 0);
         }
         if (strcmp(buffer, "decrypt\n") == 0) {
             decrypt(cash, 55, 132);
@@ -215,6 +216,8 @@ int main(int argc, char *argv[]){
         if (strcmp(buffer, "prime decrypt\n") == 0) {
             bzero(buffer, DEFAULT_BUFLEN);
             prime_decipher(cash, buffer);
+            print_aligned(buffer, 0);
+
         }
         if (strcmp(buffer, "123\n") == 0) {
             check = 1;
