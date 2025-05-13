@@ -10,13 +10,13 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <locale.h>
+#include <ncurses.h>
 
 #define DEFAULT_BUFLEN 4096
 #define GREEN   "\033[32m"
 #define BLUE    "\033[34m"
 #define RESET   "\033[0m"
 
-// Print an error message (using perror) and exit the program
 void error(const char *msg)
 {
     perror(msg);
@@ -46,33 +46,80 @@ void custom_print(char *buffer, int len, char *color){
     }
 }
 
-void print_block(const char *text, int align_left) {
+void print_left(char *text) {
     int len = strlen(text);
-    int half = get_term_width() / 2;
-    int pad = 0;
-    char *color = GREEN;
-    if (align_left) {
-        color = BLUE;
-        pad = half;
-        printf("%*s", pad, "");
-    }
+    int max_len = get_term_width() / 2;
+
+    int symbols_in_line = 0;
+
     for (int i = 0; i < len; i++) {
-        char word[100];
+        char word[max_len];
+        bzero(word, len);
         int j = 0;
-        while (!isspace(text[i]) && text[i] != '\0' && text[i] != '\n') {
+        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
             word[j] = text[i];
             i++;
             j++;
         }
         word[j] = ' ';
-        if ((i - j)%half + j < half) {
-            custom_print(word, j, color);
+        j++;
+
+        if (symbols_in_line + j <= max_len) {
+            symbols_in_line += j;
+            custom_print(word, j, BLUE);
         } else {
-            printf("\n%*s", pad, "");
-            custom_print(word, j, color);
+            symbols_in_line = j;
+            printf("\n");
+            custom_print(word, j, BLUE);
         }
     }
     printf("\n");
+}
+
+
+void print_right(char *text) {
+    int max_len, len = strlen(text);
+    int cur_x, cur_y, start_x;
+    int symbols_in_line = 0;
+
+    initscr();
+
+    int cols, rows;
+    getmaxyx(stdscr, rows, cols);
+    max_len = cols / 2;
+
+    getyx(stdscr, cur_y, cur_x);
+    start_x = max_len + 1;
+
+    move(cur_y, start_x);
+
+    for (int i = 0; i < len; i++) {
+        char word[max_len];
+        bzero(word, len);
+        int j = 0;
+        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
+            word[j] = text[i];
+            i++;
+            j++;
+        }
+        word[j] = ' ';
+        j++;
+
+        if (symbols_in_line + j <= max_len) {
+            symbols_in_line += j;
+            custom_print(word, j, GREEN);
+        } else {
+            symbols_in_line = j;
+            cur_y++;
+            move(cur_y, start_x);
+            custom_print(word, j, GREEN);
+        }
+    }
+
+    getyx(stdscr, cur_y, cur_x);
+    move(cur_y + 1, 0);
+    refresh();
+    endwin();
 }
 
 
