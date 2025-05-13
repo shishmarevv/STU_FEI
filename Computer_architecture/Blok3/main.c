@@ -17,14 +17,17 @@
 #define BLUE    "\033[34m"
 #define RESET   "\033[0m"
 
+
 void error(const char *msg){
     fprintf(stderr, "%s\n", msg);
     exit(1);
 }
 
-int get_term_width() {
+int get_terminal_width() {
     struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
+        return 80;
+    }
     return w.ws_col;
 }
 
@@ -38,17 +41,16 @@ void custom_print(char *buffer, int len, char *color){
     }
 }
 
-void print_left(char *text) {
+void print_aligned(const char *text, int is_right) {
     int len = strlen(text);
-    int max_len = get_term_width() / 2;
-
-    int symbols_in_line = 0;
+    int width = get_terminal_width()/2;
+    int current_len = 0;
 
     for (int i = 0; i < len; i++) {
-        char word[max_len];
-        bzero(word, len);
+        char word[width];
+        bzero(word, width);
         int j = 0;
-        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
+        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < width - 1) {
             word[j] = text[i];
             i++;
             j++;
@@ -56,61 +58,46 @@ void print_left(char *text) {
         word[j] = ' ';
         j++;
 
-        if (symbols_in_line + j <= max_len) {
-            symbols_in_line += j;
-            custom_print(word, j, BLUE);
-        } else {
-            symbols_in_line = j;
+        if (current_len + j + (current_len ? 1 : 0) > width) {
             printf("\n");
-            custom_print(word, j, BLUE);
+            current_len = 0;
         }
+
+        if (is_right && current_len == 0) {
+            printf("%*s", width, "");
+        }
+
+        custom_print(word, j, is_right ? GREEN : BLUE);
+        current_len += j;
     }
     printf("\n");
 }
 
-
-void print_right(char *text) {
-    int max_len, len = strlen(text);
-    int cur_x, cur_y, start_x;
-    int symbols_in_line = 0;
-
-    initscr();
-
-    max_len = get_term_width() / 2;
-
-    getyx(stdscr, cur_y, cur_x);
-    start_x = max_len + 1;
-
-    move(cur_y, start_x);
-
+void print_crypt(char *buffer, int len) {
+    printf("%s", GREEN);
+    int width = get_terminal_width()/2;
+    printf("%*s", width, "");
+    int j = 0;
     for (int i = 0; i < len; i++) {
-        char word[max_len];
-        bzero(word, len);
-        int j = 0;
-        while (text[i] != ' ' && text[i] != '\0' && text[i] != '\n' && j < max_len - 1) {
-            word[j] = text[i];
-            i++;
-            j++;
+        if (j == width - 1) {
+            printf("\n");
+            j = 0;
+            printf("%*s", width, "");
         }
-        word[j] = ' ';
         j++;
-
-        if (symbols_in_line + j <= max_len) {
-            symbols_in_line += j;
-            custom_print(word, j, GREEN);
-        } else {
-            symbols_in_line = j;
-            cur_y++;
-            move(cur_y, start_x);
-            custom_print(word, j, GREEN);
+        switch (buffer[i]) {
+            case '\n': printf("\\n"); break;
+            case '\t': printf("\\t"); break;
+            case '\r': printf("\\r"); break;
+            case '\0': printf("\\0"); break;
+            default: printf("%c", buffer[i]);
         }
+        fflush(stdout);
+        usleep(15000);
     }
-
-    getyx(stdscr, cur_y, cur_x);
-    move(cur_y + 1, 0);
-    refresh();
-    endwin();
+    printf("%s", RESET);
 }
+
 
 int calc(int ID){
     int sum;
@@ -150,7 +137,6 @@ void logger(FILE *file, char *msg, int len) {
 void decrypt(char *in, const int key, const int length) {
     for (int i = 0; i < length; i++) {
         in[i] ^= key;
-        putchar(in[i]);
     }
     putchar('\n');
 }
@@ -194,17 +180,6 @@ int connection(int argc, char *argv[]) {
     return sockfd;
 }
 
-void message(int sockfd, char *msg) {
-    const int n = (int) write(sockfd, msg, DEFAULT_BUFLEN);
-    if (n < 0) error("ERROR writing to socket");
-    bzero(msg, DEFAULT_BUFLEN);
-}
-
-void get(int sockfd, char *msg) {
-    bzero(msg, DEFAULT_BUFLEN);
-    const int n = (int) read(sockfd, msg, DEFAULT_BUFLEN);
-    if (n < 0) error("ERROR reading from socket");
-}
 
 
 int main(int argc, char *argv[]){
@@ -217,19 +192,15 @@ int main(int argc, char *argv[]){
     int sockfd = connection(argc, argv);
 
     while (1) {
+        int check = 0;
         bzero(buffer, DEFAULT_BUFLEN);
-        print_left("Enter the message: ");
-        printf("%s\n", BLUE);
+        print_aligned("Neo: ", 0);
         fgets(buffer, DEFAULT_BUFLEN, stdin);
 
         if (strcmp(buffer, "quit\n") == 0) {
-            print_right( "Exiting and closing socket...\n");
+            print_aligned( "Exiting and closing socket...\n", 1);
             logger(file, "Exiting and closing socket...\n", strlen("Exiting and closing socket...\n"));
             break;
-        }
-        if (strcmp(buffer, "id\n") == 0) {
-            int id = 127855;
-            sprintf(buffer, "%d\n", id);
         }
         if (strcmp(buffer, "calc\n") == 0) {
             int res = calc(127855);
@@ -237,7 +208,7 @@ int main(int argc, char *argv[]){
         }
         if (strcmp(buffer, "decrypt\n") == 0) {
             decrypt(cash, 55, 132);
-            print_right(cash);
+            print_aligned(cash, 1);
             logger(file, cash, DEFAULT_BUFLEN);
             continue;
         }
@@ -245,19 +216,30 @@ int main(int argc, char *argv[]){
             bzero(buffer, DEFAULT_BUFLEN);
             prime_decipher(cash, buffer);
         }
+        if (strcmp(buffer, "123\n") == 0) {
+            check = 1;
+        }
 
-        message(sockfd, buffer);
+        int n = (int) write(sockfd, buffer, strlen(buffer));
+        if (n < 0) error("ERROR writing to socket");
         logger(file, buffer, DEFAULT_BUFLEN);
 
-        get(sockfd, buffer);
+        bzero(buffer, DEFAULT_BUFLEN);
+
+        n = (int) read(sockfd, buffer, DEFAULT_BUFLEN - 1);
+        if (n < 0) error("ERROR reading from socket");
+        print_aligned("Morpheus: \n", 1);
+        if (check) {
+            print_crypt(buffer, 132);
+        } else {
+            print_aligned(buffer, 1);
+        }
         logger(file, buffer, DEFAULT_BUFLEN);
         memcpy(cash, buffer, DEFAULT_BUFLEN);
-
-        print_right(buffer);
     }
 
     fclose(file);
     close(sockfd);
-    print_right("Connection closed\n");
+    print_aligned("Connection closed\n", 1);
     return 0;
 }

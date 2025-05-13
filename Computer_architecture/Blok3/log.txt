@@ -1,9 +1,6 @@
 
+
 Wake up Neo...  The Matrix has you...  (You're connected to Morpheus' server. Send me your ID to proceed.)
-
-
-You sent me some rubbish or your ID doesn't exist, try again...
-You sent me some rubbish or your ID doesn't exist, try again...
 
 Exiting and closing socket...
 
