@@ -151,7 +151,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/snap/clion/341/bin/cmake/linux/x64/bin/cmake"
+			"value" : "/var/lib/snapd/snap/clion/338/bin/cmake/linux/x64/bin/cmake"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -163,7 +163,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/snap/clion/341/bin/cmake/linux/x64/bin/cpack"
+			"value" : "/var/lib/snapd/snap/clion/338/bin/cmake/linux/x64/bin/cpack"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -175,7 +175,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/snap/clion/341/bin/cmake/linux/x64/bin/ctest"
+			"value" : "/var/lib/snapd/snap/clion/338/bin/cmake/linux/x64/bin/ctest"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER",
@@ -207,7 +207,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ar-13"
+			"value" : "/usr/bin/gcc-ar"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -223,7 +223,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ranlib-13"
+			"value" : "/usr/bin/gcc-ranlib"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -551,7 +551,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "1"
+			"value" : "0"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -579,7 +579,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "/snap/clion/341/bin/ninja/linux/x64/ninja"
+			"value" : "/var/lib/snapd/snap/clion/338/bin/ninja/linux/x64/ninja"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -811,7 +811,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/snap/clion/341/bin/cmake/linux/x64/share/cmake-3.31"
+			"value" : "/var/lib/snapd/snap/clion/338/bin/cmake/linux/x64/share/cmake-3.31"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",

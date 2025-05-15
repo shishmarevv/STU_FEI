@@ -94,7 +94,7 @@ void print_crypt(char *buffer, int len) {
         fflush(stdout);
         usleep(15000);
     }
-    printf("%s", RESET);
+    printf("\n%s", RESET);
 }
 
 
@@ -146,7 +146,7 @@ int connection(int argc, char *argv[]) {
     struct hostent *server;
     char buffer[DEFAULT_BUFLEN];
 
-    if (argc < 3) {
+    if (argc < 4) {
         fprintf(stderr,"usage %s hostname port\nUsing default values\n", argv[0]);
         portno = 777;
         server = gethostbyname("147.175.115.34");
@@ -155,8 +155,8 @@ int connection(int argc, char *argv[]) {
             exit(0);
         }
     } else {
-        portno = atoi(argv[2]);
-        server = gethostbyname(argv[1]);
+        portno = atoi(argv[3]);
+        server = gethostbyname(argv[2]);
         if (server == NULL) {
             fprintf(stderr,"ERROR, no such host\n");
             exit(0);
@@ -181,9 +181,16 @@ int connection(int argc, char *argv[]) {
 
 
 
+
 int main(int argc, char *argv[]){
     char buffer[DEFAULT_BUFLEN] = {0};
     char cash[DEFAULT_BUFLEN] = {0};
+    int id;
+    if (argc < 2) {
+        id = 127855;
+    } else{
+        id = atoi(argv[1]);
+    }
 
     FILE *file = fopen("log.txt", "w");
     if (file == NULL) error("ERROR opening file");
@@ -195,15 +202,36 @@ int main(int argc, char *argv[]){
         bzero(buffer, DEFAULT_BUFLEN);
         print_aligned("Neo: ", 0);
         printf("%s", BLUE);
-        fgets(buffer, DEFAULT_BUFLEN, stdin);
 
+
+        const char *key = " code ";
+        char *pos = strstr(cash, key);
+        if (pos == NULL){
+            fgets(buffer, DEFAULT_BUFLEN, stdin);
+        } else {
+            pos += strlen(key);
+
+            char *end;
+            long val = strtol(pos, &end, 10);
+            if (pos == end) {
+                fclose(file);
+                close(sockfd);
+                print_aligned("Connection closed\n", 1);
+                error("No int after code keyword");
+            }
+            sprintf(buffer, "%ld\n", val);
+            print_aligned(buffer, 0);
+        }
+        if (strcmp(buffer, "id\n") == 0) {
+            sprintf(buffer, "%d\n", id);
+        }
         if (strcmp(buffer, "quit\n") == 0) {
             print_aligned( "Exiting and closing socket...\n", 1);
             logger(file, "Exiting and closing socket...\n", strlen("Exiting and closing socket...\n"));
             break;
         }
         if (strcmp(buffer, "calc\n") == 0) {
-            int res = calc(127855);
+            int res = calc(id);
             sprintf(buffer, "%d\n", res);
             print_aligned(buffer, 0);
         }
